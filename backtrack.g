@@ -1,7 +1,7 @@
 #############################################################################
 ##
 ##                             AutSemi package
-##  ./autsemi-backtrack.g
+##  ./backtrack.g
 ##                                                          Sergio Siccha
 ##
 ##  Copyright...
@@ -9,9 +9,6 @@
 ##  Compute the AutomorphismSemigroup via backtrack
 ##
 #############################################################################
-Read("./autsemi-compute.g");
-LoadPackage( "Semigroups" );
-
 computeAutSemigroup := function( args... )
   local graph, gens, allVertices, idempotents, G, countAdded, AddToG, root, accept,
     getChild, getNext, getParent, backtrack;
@@ -39,6 +36,7 @@ computeAutSemigroup := function( args... )
   AddToG := function( x )
     local gens;
     if not x in G then
+      ## heuristic for when to compute smaller generating set
       if countAdded mod 3 = 2 then
         gens := ShallowCopy( SmallInverseSemigroupGeneratingSet( G ) );
         G := InverseSemigroup( gens );

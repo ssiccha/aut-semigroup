@@ -1,13 +1,10 @@
-LoadPackage("semigroup");
-LoadPackage("grape");
-
 #### generators for automorphism semigroup of 3x3 ####
 phi := PartialPermOp( (1,7,9,3)(2,4,8,6), [1..9] );   ## rotation 90 degrees
 r := PartialPermOp( (1,3)(4,6)(7,9), [1..9] );        ## reflection at vertical axis
 p := PartialPerm( [ 4, 5, 6, 7, 8, 9, 0, 0, 0 ] );    ## move all lines downwards
 
 S := SymmetricInverseSemigroup( 9 );
-I := IdempotentGeneratedSubsemigroup( S );
+I := IdempotentGeneratedSubsemigroup( S ); # expensive for bigger n
 autGens3 := [ phi, r, p ];
 Append( autGens3, GeneratorsOfSemigroup( I ) );
 autGens3 := IrredundantGeneratingSubset( InverseSemigroup( autGens3 ) );
@@ -24,7 +21,7 @@ edgeGens3 := [ [1,2],[2,1], [2,5],[5,2] ];
 mesh3 := Graph( D8onMesh3, [1..9], OnPoints, function(x,y) return [x,y] in edgeGens3; end, true );
 
 
-#### generators for automorphism semigroup of 4x4 ####
+#### generators for subsemigroup of AutSemi of 4x4 ####
 phi := PartialPermOp( (1,4,16,13)(2,8,15,9)(3,12,14,5)(6,7,11,10), [1..16] );
 ## rotation 90 degrees
 r := PartialPermOp( (1,4)(2,3)(5,8)(6,7)(9,12)(10,11)(13,16)(14,15), [1..16] );

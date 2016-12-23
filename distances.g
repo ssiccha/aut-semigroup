@@ -1,5 +1,3 @@
-LoadPackage("grape");
-
 ###############################
 # function computeDistances
 # Input:
@@ -32,22 +30,4 @@ end;
 ###############################
 lookupDistances := function( graph, X )
   return List( graph.fullDistances{ X }, dists -> dists{ X } );
-end;
-
-###############################
-# function IsPartialAut
-# Input:
-#   x
-#
-# Output:
-#   whether x is a partial automorphism of graph
-###############################
-IsPartialAut := function( graph, x )
-  if x = EmptyPartialPerm() then
-    return true;
-  fi;
-  return
-    lookupDistances( graph, DomainOfPartialPerm(x) )
-    =
-    lookupDistances( graph, ImageListOfPartialPerm(x) );
 end;

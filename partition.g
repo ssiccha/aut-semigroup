@@ -1,10 +1,14 @@
 ## How to get reps for orbits
 partition := function( graph, G )
-  local orb, stronglyConnectedComponents, repsPositions, reps, repsGraphs, repsGraphsConnected, repsConnected, sizes, sizesConnected;
+  local orb, stronglyConnectedComponents,
+  repsVertices, repsPositions, reps,
+  repsGraphs, repsGraphsConnected, repsConnected,
+  sizes, sizesConnected;
   orb := Orb( G, Vertices( graph ), OnSets, rec( orbitgraph := true ) );
   stronglyConnectedComponents := OrbSCC( orb );
   repsPositions := List( stronglyConnectedComponents, x -> x[1] );
   reps := orb{ repsPositions };
+  repsVertices := List( reps, x -> Vertices(x) );
   repsGraphs := List( repsVertices, x -> InducedSubgraph( graph, x ) );
   repsGraphsConnected := Filtered( repsGraphs, IsConnectedGraph );
   repsConnected := List( repsGraphsConnected, Vertices );

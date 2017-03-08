@@ -11,16 +11,24 @@
 #############################################################################
 ## TODO write a concise example of how to use this
 ## atm read read.g and examples.g, then call
-## computeAutSemigroup( mesh4, autGens4 );
+## res := constructMeshAndAutSubsemi( 4 );;
+## G := computeAutSemigroup( res.mesh, res.autGens );; time;
 computeAutSemigroup := function( args... )
-  local graph, gens, allVertices, idempotents, G, countAdded, AddToG, root, accept,
-    getChild, getNext, getParent, backtrack;
+  local graph, gens, allVertices, idempotents, G, countAdded,
+    AddToG, root, accept,
+    getChild, getNext, getParent, backtrack,
+    timesSmallerGenSet,
+    timesSizes;
+
   if Length( args ) = 1 then
     graph := args[1];
   elif Length( args ) = 2 then
     graph := args[1];
     gens := args[2];
   fi;
+
+  timesSmallerGenSet := [];
+  timesSizes := [];
 
   allVertices := Vertices( graph );
   # Initialise fullDistances of graph
@@ -37,16 +45,31 @@ computeAutSemigroup := function( args... )
 
   countAdded := 0; ##TODO heuristic for when to compute smaller generating set
   AddToG := function( x )
-    local gens;
+    local gens, res, time;
     if not x in G then
       ## heuristic for when to compute smaller generating set
-      if countAdded mod 3 = 2 then
-        gens := ShallowCopy( SmallInverseSemigroupGeneratingSet( G ) );
+      if countAdded mod 5 = 4 then
+        #gens := ShallowCopy( SmallInverseSemigroupGeneratingSet( G ) );
+        Print( "Computing smaller GenSet...\n" );
+        res := GET_REAL_TIME_OF_FUNCTION_CALL(
+            SmallInverseSemigroupGeneratingSet,
+            [G],
+            rec( passResult := true )
+        );
+        time := QuoInt( res.time, 10^6 );
+        Print( time, "s\n" );
+        Add( timesSmallerGenSet, time );
+        gens := ShallowCopy( res.result );
         G := InverseSemigroup( gens );
       fi;
       gens := ShallowCopy( GeneratorsOfInverseSemigroup( G ) );
       Add( gens, x );
       G := InverseSemigroup( gens );
+      Print( "Computing size...\n" );
+      time := GET_REAL_TIME_OF_FUNCTION_CALL( Size, [G] );
+      time := QuoInt( time, 10^6 );
+      Print( time, "s\n" );
+      Add( timesSizes, time );
       Print("--- size: ", Size( G ), ", gens: ", Length(gens), " ---\n");
       countAdded := countAdded + 1;
     fi;
@@ -150,5 +173,9 @@ computeAutSemigroup := function( args... )
   end;
 
   backtrack( root() );
-  return G;
+  return rec(
+    G := G,
+    timesSizes := timesSizes,
+    timesSmallerGenSet := timesSmallerGenSet
+  );
 end;

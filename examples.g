@@ -1,5 +1,6 @@
 constructMeshAndAutSubsemi := function( meshSize )
-if meshSize == 3 then
+local phi, r, p, autGens, idemGens, D8onMesh, edgeGens, mesh;
+if meshSize = 3 then
     #### generators for automorphism semigroup of 3x3 ####
     phi := PartialPermOp( (1,7,9,3)(2,4,8,6), [1..9] );   ## rotation 90 degrees
     r := PartialPermOp( (1,3)(4,6)(7,9), [1..9] );        ## reflection at vertical axis
@@ -22,7 +23,7 @@ if meshSize == 3 then
 fi;
 
 
-if meshSize == 4 then
+if meshSize = 4 then
     #### generators for subsemigroup of AutSemi of 4x4 ####
     phi := PartialPermOp( (1,4,16,13)(2,8,15,9)(3,12,14,5)(6,7,11,10), [1..16] );
     ## rotation 90 degrees
@@ -53,7 +54,7 @@ if meshSize == 4 then
 fi;
 
 
-if meshSize == 8 then
+if meshSize = 8 then
     #### generators for automorphism semigroup of 8x8 ####
     ## rotation 90 degrees
     phi := PartialPermOp(

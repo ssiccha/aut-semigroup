@@ -63,8 +63,10 @@ computeAutSemigroup := function( args... )
         G := InverseSemigroup( gens );
       fi;
       gens := ShallowCopy( GeneratorsOfInverseSemigroup( G ) );
+      #G := InverseSemigroup( gens );
+      ## ClosureInverseSemigroup reuses information about G
+      G := ClosureInverseSemigroup( G, x );
       Add( gens, x );
-      G := InverseSemigroup( gens );
       Print( "Computing size...\n" );
       time := GET_REAL_TIME_OF_FUNCTION_CALL( Size, [G] );
       time := QuoInt( time, 10^6 );

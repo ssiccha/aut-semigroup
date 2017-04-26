@@ -1,4 +1,10 @@
 ## How to get reps for orbits
+
+GetVertexNames := function( graph )
+    return graph.names;
+end;
+
+
 partition := function( graph, G )
   local orb, stronglyConnectedComponents,
   repsVertices, repsPositions, reps,
@@ -10,7 +16,7 @@ partition := function( graph, G )
   reps := orb{ repsPositions };
   repsGraphs := List( reps, x -> InducedSubgraph( graph, x ) );
   repsGraphsConnected := Filtered( repsGraphs, IsConnectedGraph );
-  repsConnected := List( repsGraphsConnected, Vertices );
+  repsConnected := List( repsGraphsConnected, GetVertexNames );
   sizes := Collected( List( reps, Length ) );
   sizesConnected := Collected( List( repsConnected, Length ) );
 

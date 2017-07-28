@@ -18,7 +18,9 @@ computeAutSemigroup := function( args... )
     AddToG, root, accept,
     getChild, getNext, getParent, backtrack,
     timesSmallerGenSet,
-    timesSizes;
+    timesSizes,
+    count;
+  count := rec( accept := 0, reject := 0 );
 
   if Length( args ) = 1 then
     graph := args[1];
@@ -43,14 +45,16 @@ computeAutSemigroup := function( args... )
     G := InverseSemigroup( idempotents );
   fi;
 
-  countAdded := 0; ##TODO heuristic for when to compute smaller generating set
+  countAdded := 0;
+  ##TODO better heuristic for when to compute smaller generating set
   AddToG := function( x )
     local gens, res, time;
     if not x in G then
       ## heuristic for when to compute smaller generating set
-      if countAdded mod 5 = 4 then
+      if false then
+      #if countAdded mod 5 = 4 then
         #gens := ShallowCopy( SmallInverseSemigroupGeneratingSet( G ) );
-        Print( "Computing smaller GenSet...\n" );
+        Print( "Computing smaller GenSet...\c" );
         res := GET_REAL_TIME_OF_FUNCTION_CALL(
             SmallInverseSemigroupGeneratingSet,
             [G],
@@ -67,7 +71,7 @@ computeAutSemigroup := function( args... )
       ## ClosureInverseSemigroup reuses information about G
       G := ClosureInverseSemigroup( G, x );
       Add( gens, x );
-      Print( "Computing size...\n" );
+      Print( "Computing size...\c" );
       time := GET_REAL_TIME_OF_FUNCTION_CALL( Size, [G] );
       time := QuoInt( time, 10^6 );
       Print( time, "s\n" );
@@ -161,8 +165,10 @@ computeAutSemigroup := function( args... )
     # If x is not a partial automorphism, its parent can be added to the semigroup
     if not accept( x ) then
       AddToG( getParent( x ) );
+      count.reject := count.reject+1;
       return;
     fi;
+    count.accept := count.accept+1;
     # Add x, if it is a leaf, i.e. a permutation of the whole graph
     if DomainOfPartialPerm( x ) = allVertices then
       AddToG( x );
@@ -178,6 +184,7 @@ computeAutSemigroup := function( args... )
   return rec(
     G := G,
     timesSizes := timesSizes,
-    timesSmallerGenSet := timesSmallerGenSet
+    timesSmallerGenSet := timesSmallerGenSet,
+    count := count
   );
 end;

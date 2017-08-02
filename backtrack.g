@@ -15,11 +15,11 @@
 ## G := computeAutSemigroup( res.mesh, res.autGens );; time;
 computeAutSemigroup := function( args... )
   local graph, gens, allVertices, idempotents, G, countAdded,
-    AddToG, root, accept,
-    getChild, getNext, getParent, backtrack,
-    timesSmallerGenSet,
-    timesSizes,
-    count;
+  AddToG, root, accept,
+  getChild, getNext, getParent, backtrack,
+  timesSmallerGenSet,
+  timesSizes,
+  count;
   count := rec( accept := 0, reject := 0 );
 
   if Length( args ) = 1 then

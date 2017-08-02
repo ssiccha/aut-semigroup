@@ -15,8 +15,9 @@ PointStabilizer := function( S, POINT )
     for i in [ 1 .. Length(setsWithPoint) ] do
         to := toSCCRep[i];
         from := fromSCCRep[i];
-        # Let x be the set containing POINT. To compute Stab_POINT in the Schutzenberger
-        # group of x, we need to work with the set representing the SCC of x.
+        # Let x be the set containing POINT. To compute Stab_POINT in the
+        # Schutzenberger group of x, we need to work with the set representing
+        # the SCC of x.
         stab := Stabilizer( LambdaOrbSchutzGp(orb, sccLookup[i]), POINT^to );
         # Convert the permutations in stab to PartialPerms
         newStabGens := GeneratorsOfGroup( stab );
@@ -40,12 +41,16 @@ PointStabilizer := function( S, POINT )
                 schutzGp := LambdaOrbSchutzGp( orb, sccLookup[i] );
                 if PreImagePartialPerm( from, POINT )
                 in Orbit( schutzGp, POINT^to ) then
-                    # TODO handle schutzGp trivial
                     # Handle schutzGp not being transitive by switching
                     # to its constituent action on the orbit of POINT^to.
                     phi := ActionHomomorphism(
                         schutzGp,
                         Orbit( schutzGp, POINT^to ) );
+                    # Handle schutzGp acting trivially on POINT^to
+                    if IsTrivial( Image( phi ) ) then
+                        Add( stabGens, to * from );
+                        continue;
+                    fi;
                     stabChain := StabChainMutable( Image( phi ) );
                     # ActionHomomorphism renames the points via phi!.conperm
                     a := (POINT^to)^phi!.conperm;
@@ -58,10 +63,15 @@ PointStabilizer := function( S, POINT )
                     dom := orb[OrbSCC(orb)[sccLookup[i]][1]];
                     pi := AsPartialPerm( pi, dom );
                     Add( stabGens, to * pi * from );
+                    Error( "Break Point - " );
                 fi;
             fi;
         od;
     od;
+    ## TODO: What should we do if stabGens is empty?
+    if IsEmpty( stabGens ) then
+        return fail;
+    fi;
     if IsInverseSemigroup(S) then
         pointStabilizer := InverseSemigroup( stabGens[1] );
         pointStabilizer := ClosureInverseSemigroup( pointStabilizer, stabGens );
@@ -72,4 +82,21 @@ PointStabilizer := function( S, POINT )
     return pointStabilizer;
 end;
 
-S := RandomPartialPermSemigroup(3,6); Size(S); time; Size( OrbSCC( LambdaOrb(S) ) );
+#S := RandomPartialPermSemigroup(3,6); Size(S); time; Size( OrbSCC( LambdaOrb(S) ) );
+
+BruteForcePointStabilizer := function( S, pnt )
+    local l;
+    l := AsList( S );
+    return SortedList( Filtered( l, x -> pnt^x = pnt ) );
+end;
+
+test := function( S, pnt )
+    local res, bf;
+    res := PointStabilizer( S, pnt );
+    bf := BruteForcePointStabilizer( S, pnt );
+    if res = fail  and IsEmpty(bf) then
+        return true;
+    fi;
+    res := AsSortedList( res );
+    return bf = res;
+end;

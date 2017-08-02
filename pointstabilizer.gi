@@ -1,5 +1,5 @@
 PointStabilizer := function( S, POINT )
-    local orb, sccLookup, setsWithPoint, sccsOfSetsWithPoint, toSCCRep, fromSCCRep, stabGens, c, d, stab, newStabGens, dom, i, pointStabilizer;
+    local orb, sccLookup, setsWithPoint, sccReps, tmp, fromSCCRep, toSCCRep, stabGens, to, from, stab, newStabGens, dom, schutzGp, phi, stabChain, a, b, pi1, pi2, pi, pointStabilizer, i, j;
     orb := LambdaOrb( S );
     sccLookup := OrbSCCLookup( orb );
     setsWithPoint := Filtered( [1..Size(orb)], i -> POINT in orb[i] );
@@ -29,7 +29,7 @@ PointStabilizer := function( S, POINT )
     stabGens := Concatenation( stabGens );
     for i in [ 1 .. Length(setsWithPoint) ] do
         for j in [ 1 .. Length(setsWithPoint) ] do
-            if i neq j and sccLookup[i] eq sccLookup[j] then
+            if not i = j and sccLookup[i] = sccLookup[j] then
                 # For two different sets in the same SCC take semigroup elements
                 # mapping one to the other via the SCC's representative.
                 # Then check whether POINT^to and PreImage( from, POINT ) can be
@@ -40,6 +40,7 @@ PointStabilizer := function( S, POINT )
                 schutzGp := LambdaOrbSchutzGp( orb, sccLookup[i] );
                 if PreImagePartialPerm( from, POINT )
                 in Orbit( schutzGp, POINT^to ) then
+                    # TODO handle schutzGp trivial
                     # Handle schutzGp not being transitive by switching
                     # to its constituent action on the orbit of POINT^to.
                     phi := ActionHomomorphism(
@@ -70,3 +71,5 @@ PointStabilizer := function( S, POINT )
     fi;
     return pointStabilizer;
 end;
+
+S := RandomPartialPermSemigroup(3,6); Size(S); time; Size( OrbSCC( LambdaOrb(S) ) );

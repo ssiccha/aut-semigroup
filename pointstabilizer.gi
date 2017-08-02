@@ -27,6 +27,40 @@ PointStabilizer := function( S, POINT )
         Add( stabGens, newStabGens );
     od;
     stabGens := Concatenation( stabGens );
+    for i in [ 1 .. Length(setsWithPoint) ] do
+        for j in [ 1 .. Length(setsWithPoint) ] do
+            if i neq j and sccLookup[i] eq sccLookup[j] then
+                # For two different sets in the same SCC take semigroup elements
+                # mapping one to the other via the SCC's representative.
+                # Then check whether POINT^to and PreImage( from, POINT ) can be
+                # mapped to each other in the representatives Schutzenberger
+                # group.
+                to := toSCCRep[i];
+                from := fromSCCRep[j];
+                schutzGp := LambdaOrbSchutzGp( orb, sccLookup[i] );
+                if PreImagePartialPerm( from, POINT )
+                in Orbit( schutzGp, POINT^to ) then
+                    # Handle schutzGp not being transitive by switching
+                    # to its constituent action on the orbit of POINT^to.
+                    phi := ActionHomomorphism(
+                        schutzGp,
+                        Orbit( schutzGp, POINT^to ) );
+                    stabChain := StabChainMutable( Image( phi ) );
+                    # ActionHomomorphism renames the points via phi!.conperm
+                    a := (POINT^to)^phi!.conperm;
+                    b := (PreImagePartialPerm( from, POINT ))^phi!.conperm;
+                    pi1 := InverseRepresentative( stabChain, a );
+                    pi2 := InverseRepresentative( stabChain, b );
+                    pi := pi1 / pi2;
+                    pi := PreImagesRepresentative( phi, pi );
+                    # Make this a partial perm again.
+                    dom := orb[OrbSCC(orb)[sccLookup[i]][1]];
+                    pi := AsPartialPerm( pi, dom );
+                    Add( stabGens, to * pi * from );
+                fi;
+            fi;
+        od;
+    od;
     if IsInverseSemigroup(S) then
         pointStabilizer := InverseSemigroup( stabGens[1] );
         pointStabilizer := ClosureInverseSemigroup( pointStabilizer, stabGens );

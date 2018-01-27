@@ -9,10 +9,6 @@
 ##  Compute the AutomorphismSemigroup via backtrack
 ##
 #############################################################################
-## TODO write a concise example of how to use this
-## atm read read.g and examples.g, then call
-## res := constructMeshAndAutSubsemi( 4 );;
-## G := computeAutSemigroup( res.mesh, res.autGens );; time;
 computeAutSemigroup := function( args... )
   local graph, gens, allVertices, idempotents, G, countAdded,
   AddToG, root, accept,

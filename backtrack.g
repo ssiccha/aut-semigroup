@@ -6,7 +6,7 @@
 ##
 ##  Copyright...
 ##
-##  Compute the AutomorphismSemigroup via backtrack
+##  Compute the semigroup of partial isomorphisms via backtrack
 ##
 #############################################################################
 computePartialIsoSemigroup := function( args... )

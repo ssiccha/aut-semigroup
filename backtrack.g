@@ -9,7 +9,7 @@
 ##  Compute the AutomorphismSemigroup via backtrack
 ##
 #############################################################################
-computeAutSemigroup := function( args... )
+computePartialIsoSemigroup := function( args... )
   local graph, gens, allVertices, idempotents, G, countAdded,
   AddToG, root, accept,
   getChild, getNext, getParent, backtrack,
